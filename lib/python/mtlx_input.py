@@ -363,8 +363,11 @@ class MtlXInput(GafferScene.SceneNode):
 
                             if node_name:
                                 if input_name in shader_parm:
+
+                                    channel_out = str(input_parm.getAttribute("channels"))
                                     self.set_input_connection(shader_parm[input_name],
-                                                              material_box[node_name]["out"])
+                                                              material_box[node_name]["out"],
+                                                              channel_out)
 
         logger.info("%s Loaded %d shaders in %.2f seconds" % (self.getName(), shader_count, time.time() - x))
 
@@ -535,11 +538,12 @@ class MtlXInput(GafferScene.SceneNode):
             logger.warning("Failed to set value '%s' -> '%s'\n%s" % (input_plug, value, err))
 
     @staticmethod
-    def set_input_connection(input_plug, output_plug):
+    def set_input_connection(input_plug, output_plug, ch_out=""):
         """
         Sets input connection
         @param input_plug: Gaffer.Plug
         @param output_plug: Gaffer.Plug
+        @param ch_out: str
         @return: None
         """
         assert (input_plug.isInstanceOf(Gaffer.Plug))
@@ -559,7 +563,8 @@ class MtlXInput(GafferScene.SceneNode):
                     (output_plug.isInstanceOf(Gaffer.Color3fPlug) or
                          output_plug.isInstanceOf(Gaffer.Color4fPlug)):
 
-                ch_out = output_plug.keys()[0]
+                if not ch_out:
+                    ch_out = output_plug.keys()[0]
                 input_plug.setInput(output_plug[ch_out])
 
             elif (input_plug.isInstanceOf(Gaffer.Color4fPlug) and
@@ -582,7 +587,8 @@ class MtlXInput(GafferScene.SceneNode):
             elif (input_plug.isInstanceOf(Gaffer.FloatPlug) or
                       input_plug.isInstanceOf(Gaffer.IntPlug)) and output_plug.isInstanceOf(Gaffer.V3fPlug):
 
-                ch_out = output_plug.keys()[0]
+                if not ch_out:
+                    ch_out = output_plug.keys()[0]
                 input_plug.setInput(output_plug[ch_out])
 
             else:
