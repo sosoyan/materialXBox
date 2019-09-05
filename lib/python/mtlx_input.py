@@ -16,6 +16,9 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s : [%(name)s] %(mes
 logger = logging.getLogger(__name__)
 
 
+PATH_NAME_STRIP_LENGTH = 3
+
+
 def fix_str(name):
     """
     Replace symbols with '_' strings
@@ -23,6 +26,12 @@ def fix_str(name):
     @return: str
     """
     characters = ":/"
+
+    if "/" in name:
+        split_list = name.split("/")
+        if len(split_list) >= PATH_NAME_STRIP_LENGTH - 1:
+            split_list = split_list[-PATH_NAME_STRIP_LENGTH:]
+            name = "_".join(split_list)
 
     for char in characters:
         name = name.replace(char, "_")
